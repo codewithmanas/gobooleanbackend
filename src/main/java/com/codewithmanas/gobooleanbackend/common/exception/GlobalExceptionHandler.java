@@ -4,6 +4,7 @@ import com.codewithmanas.gobooleanbackend.common.util.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,14 +44,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<List<String>>>  handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ApiResponse<Void>>  handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest httpServletRequest) {
 
         String path = httpServletRequest.getRequestURI();
         String requestId = UUID.randomUUID().toString();
 
         log.warn("[requestId={}] Email already exists", requestId);
 
-        ApiResponse<List<String>> response = new ApiResponse<>(
+        ApiResponse<Void> response = new ApiResponse<>(
                 400,
                 "Email address already exists",
                 null,
@@ -60,6 +61,26 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>>  handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest httpServletRequest) {
+
+        String path = httpServletRequest.getRequestURI();
+        String requestId = UUID.randomUUID().toString();
+
+        log.warn("[requestId={}] Invalid Credentials", requestId);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                401,
+                "Invalid Credentials",
+                null,
+                ex.getMessage(),
+                requestId,
+                path
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
 

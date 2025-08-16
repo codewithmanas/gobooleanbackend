@@ -27,7 +27,9 @@ public class SecurityConfig {
                             .requestMatchers("/**").permitAll()
                             .anyRequest()
                             .authenticated()
-                    );
+                    )
+                    // Allow frames from same origin so the console renders
+                    .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
             return http.build();
         }

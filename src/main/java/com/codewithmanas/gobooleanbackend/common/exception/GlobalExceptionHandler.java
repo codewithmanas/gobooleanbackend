@@ -42,5 +42,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<List<String>>>  handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest httpServletRequest) {
+
+        String path = httpServletRequest.getRequestURI();
+        String requestId = UUID.randomUUID().toString();
+
+        log.warn("[requestId={}] Email already exists", requestId);
+
+        ApiResponse<List<String>> response = new ApiResponse<>(
+                400,
+                "Email address already exists",
+                null,
+                ex.getMessage(),
+                requestId,
+                path
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
 
 }
